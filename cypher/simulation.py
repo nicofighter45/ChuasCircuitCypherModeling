@@ -72,7 +72,7 @@ class Simulation(ABC):
         plt.plot(self.times, solution[0], label="v1")
         plt.plot(self.times, 10 * solution[1], label="v2")
         plt.plot(self.times, 1000 * solution[2], label="i3")
-        plt.axis([0, 0.01, -3, 3])
+        plt.axis([0, 0.01, -5, 5])
         plt.legend(["v1 (V)", "v2 (0.1V)", "i3 (mA)"])
         plt.show()
 

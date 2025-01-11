@@ -22,8 +22,8 @@ v2_0_dec = -0.12
 i3_0_dec = -0.1e-3
 
 # simulation constants
-n = 10
-h = 0.4
+n = 30
+h = 5
 
 # time constants
 end = 0.01
