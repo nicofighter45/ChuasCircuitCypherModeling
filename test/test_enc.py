@@ -1,4 +1,3 @@
-from math import *
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.integrate as spi
@@ -44,9 +43,14 @@ def f_e(p, v2):
 def f_vr(v1, v2, p):
     return v1 - f_e(p, v2)
 
+
+values = []
+ts = []
 def vector_derivative(vector, t):
     v1, v2, i3 = vector
     vr = f_vr(v1, v2, f_p(t))
+    values.append(vr)
+    ts.append(t)
     return np.array(
     [
         dv1(v1, v2, vr),
@@ -55,22 +59,17 @@ def vector_derivative(vector, t):
     ])
 
 
-
-
-
 def get():
     times = np.linspace(0, 10, 1000)
     curves = spi.odeint(vector_derivative, [-0.2, -0.02, 0.1e-3], times)
-    print(curves.shape)
-    plt.plot(times, curves[:, 0], label="v1")
-    plt.plot(times, curves[:, 1], label="v2")
-    plt.plot(times, curves[:, 2], label="i3")
-    vr_curve = []
-    for k in range(1000):
-        vr_curve.append(f_vr(curves[:, 0][k], curves[:, 1][k], f_p(times[k])))
-    plt.plot(times, vr_curve, label="vr")
+    v1, v2, i3 = curves[:, 0], curves[:, 1], curves[:, 2]
+    #plt.plot(times, v1, label="v1")
+    #plt.plot(times, v2, label="v2")
+    #plt.plot(times, i3, label="i3")
+    vr = np.array(values[:1000])
+    plt.plot(times, vr, label="vr")
     plt.show()
-    return vr_curve
+    return vr
 
 
 get()
