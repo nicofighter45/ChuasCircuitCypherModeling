@@ -23,8 +23,8 @@ i3_0_dec = -0.1e-3
 
 # simulation constants
 n = 30
-h = 1.1
+h = 0.4
 
 # time constants
-end = 0.005
+end = 0.02
 number = 2000
