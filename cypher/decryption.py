@@ -6,9 +6,9 @@ class Decryption(Simulation):
         self.vr_list = vr_list
 
     def p(self):
-        tot = self.f1(self.e(), -self.v2)
+        tot = f1(self.e(), -self.v2)
         for _ in range(n - 1):
-            tot = self.f1(tot, -self.v2)
+            tot = f1(tot, -self.v2)
         return tot
 
     def vr(self):

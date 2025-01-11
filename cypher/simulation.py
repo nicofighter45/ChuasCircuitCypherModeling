@@ -5,6 +5,26 @@ from scipy.integrate import odeint
 from matplotlib import pyplot as plt
 
 
+def f1(x, k):
+    sum = x + k
+    while sum < -h:
+        sum += 2 * h
+    while sum > h:
+        sum -= 2 * h
+    return sum
+
+
+def old_f1(x, k):
+    sum = x+k
+    if -2 * h <= sum <= -h:
+        return sum + 2 * h
+    if -h < sum < h:
+        return sum
+    if h <= sum <= 2 * h:
+        return sum - 2 * h
+    raise ValueError("Invalid value", x, k, sum, 2*h)
+
+
 class Simulation(ABC):
 
     def __init__(self, local_v1_0, local_v2_0, local_i3_0):
@@ -19,26 +39,6 @@ class Simulation(ABC):
     @abstractmethod
     def e(self):
         pass
-
-
-    def f1(self, x, k):
-        sum = x+k
-        if -2 * h <= sum <= -h:
-            return sum + 2 * h
-        if -h < sum < h:
-            return sum
-        if h <= sum <= 2 * h:
-            return sum - 2 * h
-        raise ValueError("Invalid value", x, k, sum, 2*h)
-
-    def inf_f1(self, x, k):
-        sum = x + k
-        while sum < -h:
-            sum += 2 * h
-        while sum > h:
-            sum -= 2 * h
-        return sum
-
 
     def dv1(self):
         return (G * (self.v2 - self.v1) - f(self.vr())) / C1
@@ -72,7 +72,7 @@ class Simulation(ABC):
         plt.plot(self.times, solution[0], label="v1")
         plt.plot(self.times, 10 * solution[1], label="v2")
         plt.plot(self.times, 1000 * solution[2], label="i3")
-        plt.axis([0, 0.01, -5, 5])
+        plt.axis([0, end, -5, 5])
         plt.legend(["v1 (V)", "v2 (0.1V)", "i3 (mA)"])
         plt.show()
 
