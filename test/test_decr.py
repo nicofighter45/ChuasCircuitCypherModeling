@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.integrate as spi
-import test
+import test_enc
 
 # electrical constants
 C2, C1, L, G, Ga, Gb, E = 50e-9, 5.56e-9, 7.14e-3, 0.7e-3, -0.8e-3, -0.5e-3, 1
@@ -23,6 +23,8 @@ def di3(v2):
     return -v2/L
 
 def f1(x, k):
+    if k < 1e-12:
+        k = 0
     if -2*h <= x + k <= -h:
         return x+k+2*h
     if -h < x + k < h:
@@ -54,7 +56,7 @@ def get_curves(ts, vrs):
     return spi.odeint(vector_derivative, [0, 0, 0], ts)
 
 times = np.linspace(0, 10, 1000)[:-1]
-vr = test.get()
+vr = test_enc.get()
 curves = get_curves(times, vr)
 v1_curve = curves[:, 0]
 v2_curve = curves[:, 1]
