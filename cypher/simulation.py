@@ -5,29 +5,10 @@ from scipy.integrate import odeint
 from matplotlib import pyplot as plt
 
 
-def f1(x, k):
-    sum = x + k
-    while sum < -h:
-        sum += 2 * h
-    while sum > h:
-        sum -= 2 * h
-    return sum
-
-
-def old_f1(x, k):
-    sum = x+k
-    if -2 * h <= sum <= -h:
-        return sum + 2 * h
-    if -h < sum < h:
-        return sum
-    if h <= sum <= 2 * h:
-        return sum - 2 * h
-    raise ValueError("Invalid value", x, k, sum, 2*h)
-
-
 class Simulation(ABC):
 
     def __init__(self, local_v1_0, local_v2_0, local_i3_0):
+        self.initial_values = np.array([local_v1_0, local_v2_0, local_i3_0])
         self.times = np.array([i * end / number for i in range(number)])
         self.t = 0
         self.v1, self.v2, self.i3 = local_v1_0, local_v2_0, local_i3_0
@@ -61,7 +42,7 @@ class Simulation(ABC):
         )
 
     def solve(self):
-        x = odeint(self.dx, [v1_0, v2_0, i3_0], self.times)
+        x = odeint(self.dx, self.initial_values, self.times)
         v1_list = x[:, 0]
         v2_list = x[:, 1]
         i3_list = x[:, 2]
@@ -75,6 +56,27 @@ class Simulation(ABC):
         plt.axis([0, end, -5, 5])
         plt.legend(["v1 (V)", "v2 (0.1V)", "i3 (mA)"])
         plt.show()
+
+
+def f1(x, k):
+    sum = x + k
+    while sum < -h:
+        sum += 2 * h
+    while sum > h:
+        sum -= 2 * h
+    return sum
+
+
+@DeprecationWarning
+def old_f1(x, k):
+    sum = x+k
+    if -2 * h <= sum <= -h:
+        return sum + 2 * h
+    if -h < sum < h:
+        return sum
+    if h <= sum <= 2 * h:
+        return sum - 2 * h
+    raise ValueError("Invalid value", x, k, sum, 2*h)
 
 
 def f(v):

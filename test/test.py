@@ -3,9 +3,14 @@ from cypher.encryption import *
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
+import time
 
 
-encryption = Encryption(lambda t: np.sin(t*4100))
+def function_to_encrypt(t):
+    return np.sin(4100*t)
+
+timenow = time.time()
+encryption = Encryption(function_to_encrypt)
 initial_p = encryption.p_list
 simu_encryption = encryption.solve()
 vr = encryption.vr_list(simu_encryption)
@@ -13,6 +18,7 @@ decryption = Decryption(vr)
 simu_decryption = decryption.solve()
 final_p = decryption.p_list(simu_decryption)
 times = decryption.times
+print(time.time() - timenow)
 
 encryption.print_simulation_result(simu_encryption, "encryption")
 decryption.print_simulation_result(simu_decryption, "encryption")
