@@ -1,7 +1,7 @@
 import numpy as np
 from constants import *
 from abc import ABC, abstractmethod
-from scipy.integrate import odeint
+from scipy.integrate import solve_ivp
 from matplotlib import pyplot as plt
 
 
@@ -10,6 +10,7 @@ class Simulation(ABC):
     def __init__(self, local_v1_0, local_v2_0, local_i3_0, times):
         self.initial_values = np.array([local_v1_0, local_v2_0, local_i3_0])
         self.times = times
+        self.i = 0
 
     @abstractmethod
     def vr(self, _, __, ___):
@@ -19,18 +20,24 @@ class Simulation(ABC):
     def e(self, _, __):
         pass
 
-    def dx(self, x, t):
+    def dx(self, t, x):
+        if self.i%100 == 0:
+            print(t, x)
+        self.i+=1
         v1, v2, i3 = x
+        vr = self.vr(t, v1, v2)
         return np.array(
             [
-                dv1(v1, v2, self.vr(t, v1, v2)),
+                dv1(v1, v2, vr),
                 dv2(v1, v2, i3),
                 di3(v2)
             ]
         )
 
     def solve(self):
-        x = odeint(self.dx, self.initial_values, self.times)
+        x = solve_ivp(self.dx, (0, end), self.initial_values, t_eval=self.times, method='RK23',
+                      rtol=1e-2, atol=1e-3)
+        print("hey")
         return x[:, 0], x[:, 1], x[:, 2]
 
     def print_simulation_result(self, solution, name):
@@ -52,7 +59,7 @@ def f1(x, k):
     return sum
 
 
-def old_f1(x, k):
+def _f1(x, k):
     sum = x+k
     if -2 * h <= sum <= -h:
         return sum + 2 * h
@@ -60,7 +67,7 @@ def old_f1(x, k):
         return sum
     if h <= sum <= 2 * h:
         return sum - 2 * h
-    raise ValueError("Invalid value", x, k, sum, 2*h)
+    raise ValueError("Invalid value", x, k, get_t_from_k(k), sum, 2*h)
 
 
 def dv1(v1, v2, vr):
@@ -68,7 +75,7 @@ def dv1(v1, v2, vr):
 
 
 def dv2(v1, v2, i3):
-    return (G * (v1 - v2) + i3) / C2
+    return (G * (v1 - v2)+i3) / C2
 
 
 def di3(v2):

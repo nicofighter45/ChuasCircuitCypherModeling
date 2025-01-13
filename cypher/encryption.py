@@ -17,7 +17,7 @@ class Encryption(Simulation):
     # encryption rule
     def e(self, t, v2):
         tot = f1(self.p(t), v2)
-        for _ in range(n - 1):
+        for i in range(n - 1):
             tot = f1(tot, v2)
         return tot
 
@@ -27,3 +27,10 @@ class Encryption(Simulation):
             k = get_k_from_t(t)
             vr_list.append(self.vr(t, solved_simulation[0][k], solved_simulation[1][k]))
         return np.array(vr_list)
+
+    def e_list(self, solved_simulation):
+        list = []
+        for t in self.times:
+            k = get_k_from_t(t)
+            list.append(self.e(t, solved_simulation[1][k]))
+        return np.array(list)
