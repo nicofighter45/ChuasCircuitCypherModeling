@@ -23,7 +23,7 @@ i3_0_dec = -0.1
 
 # simulation constants
 n = 30
-h = 0.4
+h = 0.7
 
 
 
@@ -62,4 +62,4 @@ h = 1
 """
 # time constants
 end = 0.02
-number = 10000
+number = 4000

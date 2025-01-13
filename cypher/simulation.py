@@ -10,7 +10,6 @@ class Simulation(ABC):
     def __init__(self, local_v1_0, local_v2_0, local_i3_0, times):
         self.initial_values = np.array([local_v1_0, local_v2_0, local_i3_0])
         self.times = times
-        self.i = 0
 
     @abstractmethod
     def vr(self, _, __, ___):
@@ -21,24 +20,18 @@ class Simulation(ABC):
         pass
 
     def dx(self, t, x):
-        if self.i%100 == 0:
-            print(t, x)
-        self.i+=1
         v1, v2, i3 = x
-        vr = self.vr(t, v1, v2)
         return np.array(
             [
-                dv1(v1, v2, vr),
-                dv2(v1, v2, i3),
-                di3(v2)
+                a * (v2 - v1) + chuas_characteristic(self.vr(t, v1, v2)),
+                b * (v1 - v2) + c * i3,
+                d * v2
             ]
         )
 
     def solve(self):
-        x = solve_ivp(self.dx, (0, end), self.initial_values, t_eval=self.times, method='RK23',
-                      rtol=1e-2, atol=1e-3)
-        print("hey")
-        return x[:, 0], x[:, 1], x[:, 2]
+        x = solve_ivp(self.dx, (0, end), self.initial_values, t_eval=self.times)
+        return x.y[0], x.y[1], x.y[2]
 
     def print_simulation_result(self, solution, name):
         plt.title("Simulation " + name)
@@ -70,20 +63,8 @@ def _f1(x, k):
     raise ValueError("Invalid value", x, k, get_t_from_k(k), sum, 2*h)
 
 
-def dv1(v1, v2, vr):
-    return (G * (v2 - v1) - f(vr)) / C1
-
-
-def dv2(v1, v2, i3):
-    return (G * (v1 - v2)+i3) / C2
-
-
-def di3(v2):
-    return -v2 / L
-
-
-def f(v):
-    return Gb * v + 0.5 * (Ga - Gb) * (abs(v + E) - abs(v - E))
+def chuas_characteristic(v):
+    return e * v + f * (abs(v + E) - abs(v - E))
 
 
 def get_k_from_t(t):
