@@ -1,7 +1,10 @@
+import threading
+
 import numpy as np
 import pygame.draw
 import scipy
 import matplotlib.pyplot as plt
+import matplotlib
 
 from app.src.abstract.Clickable import Button
 from app.src.classical_chuascircuit import launch_chua_circuit
@@ -16,10 +19,14 @@ class App:
     # init, create buttons and initialize variables
     def __init__(self, title):
 
+
+        self.__title = title
+
         # init pygame
+        matplotlib.use("Agg")
         pg.init()
-        self.__screen = pg.display.set_mode(WINDOW_SIZE)
-        pg.display.set_caption(title)
+        self.__screen = pg.display.set_mode(WINDOW_SIZE, pygame.FULLSCREEN)
+        pg.display.set_caption(self.__title)
         icon = pg.image.load('app/ressources/icon.jpg')
         pg.display.set_icon(icon)
 
@@ -31,8 +38,9 @@ class App:
 
         # state variables
         self.__in_simulation = False
-        self.__in_calculation = 0
         self.__should_actualize = True
+        self.__threads = []
+        self.__multithreading = False
 
         # buttons
         self.__clickables = [
@@ -50,7 +58,7 @@ class App:
             self.__create_menu_button("4th char", 400, i=3),
             self.__create_menu_button("5th char", 340, i=4),
             self.__create_menu_button("6th char", 280, i=5),
-            Button("Classic Chua's Scheme", pg.Color("#FFC232"), (750, 630), (300, 60), launch_chua_circuit),
+            Button("Classic Chua's Scheme", pg.Color("#FFC232"), (750, 630), (300, 60), self.__launch_chua_circuit_simulation),
         ]
 
         # launch pygame
@@ -72,6 +80,9 @@ class App:
         """Checking events such as keyboard input and button press"""
         if event.type == pg.QUIT:
             self.__should_actualize = False
+        elif event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+            self.__should_actualize = False
+            exit()
         elif event.type == pg.KEYDOWN and not self.__in_simulation:
             if event.key == pg.K_BACKSPACE:
                 self.__text = self.__text[:-1]
@@ -90,9 +101,17 @@ class App:
         for clickable in self.__clickables:
             clickable.draw(self.__screen)
         if self.__in_simulation:
-            if self.__in_calculation != 0:
+            if len(self.__threads) != 0:
                 self.__message("Running the Simulation, please wait ...", y=50)
-                self.__message(f"{len(self.__text) - self.__in_calculation}/{len(self.__text)} done", y=90)
+                self.__message(f"{len(self.__text) - len(self.__threads)}/{len(self.__text)} done", y=90)
+                self.__message(f"Every char is in it's separate thread,", y=130)
+                self.__message(f"so the first 0/{len(self.__text)} can take time", y=170)
+                self.__message(f"You can't leave while the computations are made", y=560)
+                self.__message("If you press escape it will leave at", y=600)
+                self.__message("the end of the computations", y=640)
+            elif self.__multithreading:
+                self.__multithreading = False
+                self.__after_finished_simulation()
             else:
                 try:
                     self.__render_simulation()
@@ -103,6 +122,7 @@ class App:
                 # help text message
                 text_box = get_font().render("Type up to 6 characters", True, pg.Color("darkgrey"))
                 self.__message("Type with your keyboard to enter characters")
+                self.__message("Press escape to leave", y=640)
                 self.__message("Press one of the Render button", 690, 10, 20)
                 self.__message("to run the simulation", 800, 35, 20)
                 self.__message("Press to reload the simulation", 690, 360, 20)
@@ -133,29 +153,37 @@ class App:
         draw_table(self.__screen, [["Char"], ["p"], ["d"], ["Vr"]], start_x - 100, 570, 100, 30)
         draw_table(self.__screen, self.__frequencies, start_x, 600, 60, 30)
 
-    def __launch_simulation(self, function):
+    def __launch_simulations(self, function):
         """Launch a new simulation"""
         if self.__text == "":
             return
-        if self.__in_simulation and self.__in_calculation != 0:
+        if self.__in_simulation and len(self.__threads) != 0:
             return
         if self.__in_simulation:
             self.__re_simulate()
         self.__in_simulation = True
-        self.__in_calculation = len(self.__text)
-        self.__loop()
-        pg.display.update()
         i = 0
         for char in self.__text:
-            self.__frequencies[0].append(char_to_f(char))
-            manager = Manager(self.__frequencies[0][-1], function)
-            self.__managers.append(manager)
-            manager.export_graphs(i)
-            manager.curve_fit()
+            thread = (threading.Thread(target=lambda: self.__launch_simulation(char, function, i)))
+            self.__threads.append(thread)
+            thread.start()
             i+=1
-            self.__in_calculation -= 1
-            self.__loop()
-            pg.display.update()
+        self.__multithreading = True
+
+
+    def __launch_simulation(self, char, function, i):
+        self.__frequencies[0].append(char_to_f(char))
+        manager = Manager(self.__frequencies[0][-1], function)
+        self.__managers.append(manager)
+        manager.export_graphs(i)
+        manager.curve_fit()
+        self.__threads.remove(threading.current_thread())
+
+
+    def __after_finished_simulation(self):
+        for thread in self.__threads:
+            thread.join()
+        self.__threads = []
         for i in range(len(self.__text)):
             self.__clickables[7 + i].should_render = True
         for clickable in self.__clickables[4:7]:
@@ -165,10 +193,11 @@ class App:
 
     def __reload(self):
         """Reload the workspace"""
-        if self.__in_calculation != 0:
+        if len(self.__threads) != 0:
             return
         self.__in_simulation = False
-        self.__in_calculation = 0
+        self.__multithreading = False
+        self.__threads = []
         self.__text = ""
         self.__clickables[-1].should_render = True
         self.__re_simulate()
@@ -196,15 +225,23 @@ class App:
 
     def __launch_sinusoid_simulation(self):
         """Launch a sinusoidal simulation"""
-        self.__launch_simulation(lambda t, f: 0.2 * np.sin(f*t))
+        self.__launch_simulations(lambda t, f: 0.2 * np.sin(f*t))
 
     def __launch_square_simulation(self):
         """Launch a square wave simulation"""
-        self.__launch_simulation(lambda t, f: 0.2 * np.sign(np.sin(f*t)))
+        self.__launch_simulations(lambda t, f: 0.2 * np.sign(np.sin(f*t)))
 
     def __launch_sawtooth_simulation(self):
         """Launch a sawtooth wave simulation"""
-        self.__launch_simulation(lambda t, f: 0.2 * scipy.signal.sawtooth((f/2)*t))
+        self.__launch_simulations(lambda t, f: 0.2 * scipy.signal.sawtooth((f/2)*t))
+
+    def __launch_chua_circuit_simulation(self):
+        """Launch chua circuit simulation"""
+        self.__should_actualize = False
+        pg.display.quit()
+        matplotlib.use("TkAgg")
+        launch_chua_circuit()
+        self.__init__(self.__title)
 
     def __message(self, text, x=80, y=150, size=22):
         """Display a message on the screen"""

@@ -57,3 +57,4 @@ def launch_chua_circuit():
     fig.tight_layout()
     fig.savefig('app/ressources/export/classical_chuascircuit_phase.png')
     plt.show()
+
