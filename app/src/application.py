@@ -165,6 +165,8 @@ class App:
 
     def __reload(self):
         """Reload the workspace"""
+        if self.__in_calculation != 0:
+            return
         self.__in_simulation = False
         self.__in_calculation = 0
         self.__text = ""
