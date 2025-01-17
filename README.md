@@ -6,16 +6,16 @@ Pour lancer le programme, il suffit d'exécuter le fichier *`main.py`*
 
 ## Problème d'affichage
 
-Si jamais vous n'avez pas le même affichage que l'image *`window.png`*, essayer de changer votre zoom dans vos paramètre d'affichage de l'os.
+Si jamais vous n'avez pas le même affichage que l'image *`window.png`*, essayez de changer votre zoom dans vos paramètres d'affichage de l'os.
 
-Vous pouvez aussi lancer le fichier *`rescue.py`* mais vous ne profiterez pas du pleine écran
+Vous pouvez aussi lancer le fichier *`rescue.py`* mais vous ne profiterez pas du plein écran
 
 ## Erreur
 
 Si jamais la fenêtre n'apparait pas, tentez de lancer le programme depuis un terminal de commande pour voir apparaître une erreur.
-Il est possible que celle-ci soit due à un problème de compatibilité de version python ou de version des libraries.
+Il est possible que celle-ci soit due à un problème de compatibilité de version python ou de version des librairies.
 
-Vous pouvez essayer de lancer rescue.py qui n'importera pas automatiquement les libraries.
+Vous pouvez essayer de lancer rescue.py qui n'importera pas automatiquement les librairies.
 Il vous faudra donc les installer manuellement (voir *`requirements.txt`*)
 
 Vous pouvez toujours me contacter si besoin :
