@@ -1,6 +1,15 @@
+import pygame as pg
+import os
+
 WINDOW_WIDTH = 1080
 WINDOW_HEIGHT = 720
 WINDOW_SIZE = (WINDOW_WIDTH, WINDOW_HEIGHT)
+pg.init()
+script_dir = os.path.dirname(os.path.abspath(__file__))
+font_path = os.path.join(script_dir, '../ressources/Geist_Mono/GeistMono.ttf')
+def get_font(size=22):
+    return pg.font.Font(font_path, size)
+BACKGROUND_COLOR = (235, 235, 235)
 
 #Old constants
 # electrical constants
@@ -15,15 +24,15 @@ E = 1
 # initial conditions
 v1_0 = -0.2
 v2_0 = -0.02
-i3_0 = 0.1
+i3_0 = 0.1e-3
 
 v1_0_dec = 0.02
 v2_0_dec = -0.12
-i3_0_dec = -0.1
+i3_0_dec = -0.1e-3
 
 # simulation constants
 n = 30
-h = 0.7
+h = 0.4
 
 
 

@@ -1,9 +1,9 @@
-from cypher.simulation import *
+from app.src.abstract.simulation import *
 
 class Encryption(Simulation):
     def __init__(self, function, times):
-        super().__init__(v1_0, v2_0, i3_0, times)
         self.function = function
+        super().__init__(v1_0, v2_0, i3_0, times)
 
     def p(self, t):
         return self.function(t)
@@ -21,16 +21,19 @@ class Encryption(Simulation):
             tot = f1(tot, v2)
         return tot
 
-    def vr_list(self, solved_simulation):
+    def vr_list(self):
         vr_list = []
         for t in self.times:
             k = get_k_from_t(t)
-            vr_list.append(self.vr(t, solved_simulation[0][k], solved_simulation[1][k]))
+            vr_list.append(self.vr(t, self.solution.y[0][k], self.solution.y[1][k]))
         return np.array(vr_list)
 
-    def e_list(self, solved_simulation):
+    def continuous_vr(self, t):
+        return self.vr(t, self.solution.sol(t)[0], self.solution.sol(t)[1])
+
+    def e_list(self):
         list = []
         for t in self.times:
             k = get_k_from_t(t)
-            list.append(self.e(t, solved_simulation[1][k]))
+            list.append(self.e(t, self.solution.y[1][k]))
         return np.array(list)

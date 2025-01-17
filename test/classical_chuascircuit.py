@@ -1,6 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
+import sys
+sys.path.append("../")
+from app.src.constants import *
+
+
 
 # Chua's circuit equations
 def chua_circuit(_, state):
@@ -13,19 +18,9 @@ def chua_circuit(_, state):
     dzdt = -y /L
     return [dxdt, dydt, dzdt]
 
-# Parameters
-factor = 4
-G = 1
-C1 = 1e-1*10**(-factor)
-C2 = 1*10**(-factor)
-L = 7e-2*10**(-factor)
-E = 1
-Ga = -1.2
-Gb = -0.8
-
 # Initial conditions and time span
 initial_state = [0.1, 0.0, 0.0]  # [x, y, z]
-t_span = (0, 1e2*10**(-factor))
+t_span = (0, 1e-2)
 t_eval = np.linspace(t_span[0], t_span[1], 10000)
 
 # Solve the system
@@ -46,21 +41,25 @@ fig = plt.figure(figsize=(12, 8))
 
 # Time series
 plt.subplot(2, 1, 1)
-plt.plot(t, x, label='x(t)')
-plt.plot(t, y, label='y(t)')
-plt.plot(t, z, label='z(t)')
-plt.title('Chua\'s Circuit Time Series')
-plt.xlabel('Time')
-plt.ylabel('Variables')
+plt.plot(t, x, label='v1 (V)')
+plt.plot(t, y, label='v2 (V)')
+plt.plot(t, z, label='i3 (mA)')
+plt.title("Classical Chua's circuit with the study's values")
+plt.xlabel('Time (s)')
+plt.ylabel('U (V)')
 plt.legend()
 
 # Phase plot (x vs z)
-plt.subplot(2, 1, 2)
-plt.plot(x, z, label='x vs z', color='orange')
-plt.title('Phase Plot')
-plt.xlabel('x')
-plt.ylabel('z')
-plt.legend()
+fig = plt.figure(figsize=(10, 6))
+ax = fig.add_subplot(111, projection='3d')
+ax.plot(x, y, z, label='Phase plot (x, y, z)', color='orange')
+ax.set_title('3D Phase Plot')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel('z')
+
+# Add legend
+ax.legend()
 
 plt.tight_layout()
 plt.show()

@@ -1,5 +1,5 @@
 import numpy as np
-from constants import *
+from app.src.constants import *
 from abc import ABC, abstractmethod
 from scipy.integrate import solve_ivp
 from matplotlib import pyplot as plt
@@ -10,6 +10,7 @@ class Simulation(ABC):
     def __init__(self, local_v1_0, local_v2_0, local_i3_0, times):
         self.initial_values = np.array([local_v1_0, local_v2_0, local_i3_0])
         self.times = times
+        self.solution = solve_ivp(self.dx, (0, end), self.initial_values, t_eval=self.times, dense_output=True)
 
     @abstractmethod
     def vr(self, _, __, ___):
@@ -29,17 +30,14 @@ class Simulation(ABC):
             ]
         )
 
-    def solve(self):
-        x = solve_ivp(self.dx, (0, end), self.initial_values, t_eval=self.times)
-        return x.y[0], x.y[1], x.y[2]
 
-    def print_simulation_result(self, solution, name):
+    def print_simulation_result(self, name):
         plt.title("Simulation " + name)
-        plt.plot(self.times, solution[0], label="v1")
-        plt.plot(self.times, 10 * solution[1], label="v2")
-        plt.plot(self.times, 1000 * solution[2], label="i3")
+        plt.plot(self.times, self.solution.y[0], label="v1")
+        plt.plot(self.times, 100 * self.solution.y[1], label="v2")
+        plt.plot(self.times, 1000 * self.solution.y[2], label="i3")
         plt.axis([0, end, -5, 5])
-        plt.legend(["v1 (V)", "v2 (0.1V)", "i3 (mA)"])
+        plt.legend(["v1 (V)", "v2 (10mV)", "i3 (mA)"])
         plt.show()
 
 
