@@ -4,6 +4,7 @@ import subprocess
 
 
 def install_packages():
+    """Install required packages from requirements.txt"""
     requirements_file = "requirements.txt"
     if not os.path.exists(requirements_file):
         print(f"{requirements_file} not found.")
@@ -24,6 +25,7 @@ def install_packages():
     os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 
 def launch_app():
+    """Launch the application"""
     from app.src.application import App
     app = App("Chaotic Cryptography Simulation")
 

@@ -1,4 +1,5 @@
 def launch_app():
+    """Launch the app without importing libraries"""
     from app.src.application import App
     app = App("Chaotic Cryptography Simulation (RESCUE MOD)")
 

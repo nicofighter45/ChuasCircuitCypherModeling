@@ -4,7 +4,8 @@ from scipy.integrate import solve_ivp
 from app.src.constants import *
 
 
-def chua_circuit(_, state):
+def dv(_, state):
+    """Return the derivative of the state vector."""
     x, y, z = state
     f_x = Gb * x + (Ga - Gb) * (np.abs(x + E) - np.abs(x - E)) / 2
     dxdt = 1/C1 * (G*(y - x) - f_x)
@@ -13,12 +14,12 @@ def chua_circuit(_, state):
     return [dxdt, dydt, dzdt]
 
 def launch_chua_circuit():
-    initial_state = [0.1, 0.0, 0.0]  # [x, y, z]
-    t_span = (0, 1e-2)
-    t_eval = np.linspace(t_span[0], t_span[1], 10000)
+    initial_state = [v1_0, v2_0, i3_0]  # [x, y, z]
+    t_span = (0, end)
+    t_eval = np.linspace(t_span[0], t_span[1], number)
 
     solution = solve_ivp(
-        chua_circuit,
+        dv,
         t_span,
         initial_state,
         t_eval=t_eval,
@@ -28,7 +29,6 @@ def launch_chua_circuit():
     t = solution.t
     x, y, z = solution.y
     z *= 1000
-
     fig, ax1 = plt.subplots(figsize=(12, 8), )
     ax1.plot(t, x, label='v1 (V)', color='blue')
     ax1.plot(t, y, label='v2 (V)', color='green')
@@ -42,7 +42,7 @@ def launch_chua_circuit():
     ax2.legend(loc='upper right')
     ax2.tick_params(axis='y', labelcolor='orange')
     ax2.spines['right'].set_color('orange')
-    plt.tight_layout()
+    fig.tight_layout()
     fig.savefig('app/ressources/export/classical_chuascircuit_time.png')
     plt.show()
 
@@ -54,6 +54,6 @@ def launch_chua_circuit():
     ax.set_xlabel('v1 (V)')
     ax.set_ylabel('v2 (V)')
     ax.set_zlabel('i3 (mA)')
-    plt.tight_layout()
+    fig.tight_layout()
     fig.savefig('app/ressources/export/classical_chuascircuit_phase.png')
     plt.show()

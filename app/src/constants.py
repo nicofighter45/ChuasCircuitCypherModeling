@@ -4,6 +4,7 @@ import os
 WINDOW_WIDTH = 1080
 WINDOW_HEIGHT = 720
 WINDOW_SIZE = (WINDOW_WIDTH, WINDOW_HEIGHT)
+
 pg.init()
 script_dir = os.path.dirname(os.path.abspath(__file__))
 font_path = os.path.join(script_dir, '../ressources/Geist_Mono/GeistMono.ttf')
@@ -34,8 +35,6 @@ i3_0_dec = -0.1e-3
 n = 30
 h = 0.4
 
-
-
 # pre-calculated constants
 a = G/C1
 b = G/C2
@@ -45,30 +44,6 @@ e = -Gb/C1
 f = (Gb-Ga)/(2*C1)
 
 
-
-"""
-# electrical constants
-C1 = 10e-6
-C2 = 100e-6
-G = 1
-L = 7e-6
-Ga = -1.2
-Gb = -0.8
-E = 1
-
-# initial conditions
-v1_0 = 0
-v2_0 = 0
-i3_0 = 0
-
-v1_0_dec = 0
-v2_0_dec = 0
-i3_0_dec = 0
-
-# simulation constants
-n = 10
-h = 1
-"""
 # time constants
 end = 0.02
 number = 4000
