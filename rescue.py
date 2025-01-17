@@ -4,6 +4,6 @@ def launch_app():
     app = App("Chaotic Cryptography Simulation (RESCUE MOD)")
 
 if __name__ == "__main__":
-    print("\n\n\nRunning Chaotic Cryptography Simulation in RESCUE MOD\n\n-----------------------------\n\nCreated by Hugo, Nicolas, Téodor\n\n")
+    print("\n\n\nRunning Chaotic Cryptography Simulation in RESCUE MOD\n\n-----------------------------\n\nCreated by Hugo, Nicolas, Teodor\n\n")
     print("\n\nWARNING !! This version doesn't automatically check for libraries, please check them manually\n\n")
     launch_app()
