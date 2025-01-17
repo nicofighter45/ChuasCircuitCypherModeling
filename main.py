@@ -30,7 +30,7 @@ def launch_app():
     app = App("Chaotic Cryptography Simulation")
 
 if __name__ == "__main__":
-    print("\n\n\nRunning Chaotic Cryptography Simulation\n\n-----------------------------\n\nCreated by Hugo, Nicolas, Théodore\n\n")
+    print("\n\n\nRunning Chaotic Cryptography Simulation\n\n-----------------------------\n\nCreated by Hugo, Nicolas, Téodor\n\n")
     install_packages()
     print("\n\nLibraries installed, launching app\n\n")
     # Window setup
