@@ -21,6 +21,7 @@ def install_packages():
     except Exception as e:
         print(f"Error installing packages: {e}")
         sys.exit(1)
+    os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 
 def launch_app():
     from app.src.application import App
