@@ -3,6 +3,7 @@ import pygame.draw
 import threading
 
 from app.src.abstract.Clickable import Button
+from app.src.classical_chuascircuit import launch_chua_circuit
 from app.src.constants import *
 from app.src.cypher.manager import Manager
 
@@ -18,6 +19,7 @@ class App:
         self.managers = []
         self.th_function = None
         self.frequencies = [[], [], []]
+        self.graphs = [0, 0]
 
         self.__in_calculation = False
         self.__in_simulation = False
@@ -28,9 +30,29 @@ class App:
             Button("Render square wave", pg.Color("#2CC7EE"), (750, 140), (300, 50),self.__launch_square_simulation),
             Button("Render sawtooth wave", pg.Color("#24E598"), (750, 210), (300, 50), self.__launch_sawtooth_simulation),
             Button("Reload", pg.Color("#FF4C28"), (950, 300), (100, 50), self.__reload),
+
+            self.__create_menu_button("Results", 0, 0),
+            self.__create_menu_button("Elec 1", 60, 1),
+            self.__create_menu_button("Elec 2", 120, 2),
+            self.__create_menu_button("1st char", 580, i=0),
+            self.__create_menu_button("2nd char", 520, i=1),
+            self.__create_menu_button("3rd char", 460, i=2),
+            self.__create_menu_button("4th char", 400, i=3),
+            self.__create_menu_button("5th char", 340, i=4),
+            self.__create_menu_button("6th char", 280, i=4),
+            Button("Classic Chua's Scheme", pg.Color("#FFC232"), (750, 630), (300, 60), launch_chua_circuit),
         ]
 
         self.__run()
+
+    def __create_menu_button(self, name, pos, n=None, i=None):
+        return Button(name, pg.Color("#949494"), (30+pos, 30), (60, 30), lambda: self.__set_graphs(n, i), False, text_size=10, black_box=True)
+
+    def __set_graphs(self, n=None, i=None):
+        if i is not None:
+            self.graphs[1] = i
+        if n is not None:
+            self.graphs[0] = n
 
     def __launch_sinusoid_simulation(self):
         th = (threading.Thread(target=self.__launch_simulation(lambda t, A, B, C: 0.2 * np.sin(A * t - B) + C)))
@@ -61,6 +83,10 @@ class App:
         self.managers = []
         self.frequencies = [[], [], []]
         self.text = ""
+        self.clickables[-1].should_render = True
+        self.graphs = [0, 0]
+        for clickable in self.clickables[4:13]:
+            clickable.should_render = False
 
     def __check_event(self, event):
         if event.type == pg.QUIT:
@@ -80,43 +106,49 @@ class App:
 
     def __loop(self):
         self.__screen.fill(BACKGROUND_COLOR)
-        if self.text == "":
-            text_box = get_font().render("Type up to 6 characters", True, pg.Color("darkgrey"))
-        else:
-            text_box = get_font().render(self.text, True, pg.Color("black"))
-        self.__screen.blit(text_box, (100, 50))
-        pygame.draw.rect(self.__screen, pg.Color("black"), pg.Rect(80, 30, 350, 70), 2)
         for clickable in self.clickables:
             clickable.draw(self.__screen)
         if self.__in_simulation:
             if self.__in_calculation:
-                self.__message("Running the Simulation, please wait ...")
+                self.__message("Running the Simulation, please wait ...", y=50)
             else:
                 try:
-                    self.__screen.blit(pg.image.load('app/ressources/graph.png'), (50, 100))
-                    string_p, string_vr = "", ""
-                    for manager in self.managers:
-                        self.frequencies[1].append(manager.fp)
-                        self.frequencies[2].append(manager.fr)
-                        string_p += f_to_char(manager.fp)
-                        string_vr += f_to_char(manager.fr)
-                    self.__message(f"Decrypted characters: {string_p}", y=600)
-                    self.__message(f"Decrypted from vr: {string_vr}", y=650)
-                    start_x = 700 + 40 * (6-len(self.frequencies[0]))
-                    self.__message("f in Hz for each char", 750, 540)
-                    draw_table(self.__screen, [[ch for ch in self.text]], start_x, 570, 60, 30)
-                    draw_table(self.__screen, [["Char"], ["p"], ["d"], ["Vr"]], start_x-100, 570, 100, 30)
-                    draw_table(self.__screen, self.frequencies, start_x, 600, 60, 30)
+                    self.__render_simulation()
                 except FileNotFoundError:
                     self.__message("Failed to load simulation, try again ...")
         else:
-            self.__message("Type with your keyboard to enter characters")
-            self.__message("Press one of the Render button", 690, 10, 20)
-            self.__message("to run the simulation", 800, 35, 20)
-            self.__message("Press to reload the simulation", 690, 360, 20)
+            if self.text == "":
+                text_box = get_font().render("Type up to 6 characters", True, pg.Color("darkgrey"))
+                self.__message("Type with your keyboard to enter characters")
+                self.__message("Press one of the Render button", 690, 10, 20)
+                self.__message("to run the simulation", 800, 35, 20)
+                self.__message("Press to reload the simulation", 690, 360, 20)
+                self.__message("Press to see classical chua's", 690, 560, 20)
+                self.__message("circuit graphs", 870, 590, 20)
+            else:
+                text_box = get_font().render(self.text, True, pg.Color("black"))
+            self.__screen.blit(text_box, (100, 50))
+            pygame.draw.rect(self.__screen, pg.Color("black"), pg.Rect(80, 30, 350, 70), 2)
 
     def __message(self, text, x=80, y=150, size=22):
         self.__screen.blit(get_font(size).render(text, True, pg.Color("black")), (x, y))
+
+    def __render_simulation(self):
+        self.__screen.blit(pg.image.load('app/ressources/export/graph' + str(self.graphs[0]) + str(self.graphs[1]) + '.png'), (40, 70))
+        pg.draw.rect(self.__screen, pg.Color("black"), pg.Rect(30, 30, 640, 530), 2)
+        string_p, string_vr = "", ""
+        for manager in self.managers:
+            self.frequencies[1].append(manager.fp)
+            self.frequencies[2].append(manager.fr)
+            string_p += f_to_char(manager.fp)
+            string_vr += f_to_char(manager.fr)
+        self.__message(f"Decrypted characters: {string_p}", y=600)
+        self.__message(f"Decrypted from vr: {string_vr}", y=650)
+        start_x = 700 + 40 * (6 - len(self.frequencies[0]))
+        self.__message("f in Hz for each char", 750, 540)
+        draw_table(self.__screen, [[ch for ch in self.text]], start_x, 570, 60, 30)
+        draw_table(self.__screen, [["Char"], ["p"], ["d"], ["Vr"]], start_x - 100, 570, 100, 30)
+        draw_table(self.__screen, self.frequencies, start_x, 600, 60, 30)
 
     def __launch_simulation(self, function):
         if self.__in_simulation or self.text == "":
@@ -128,10 +160,16 @@ class App:
         for char in self.text:
             self.frequencies[0].append(char_to_f(char))
             self.managers.append(Manager(self.frequencies[0][-1], function))
-        self.managers[-1].export_graphs()
+        i = 0
         for manager in self.managers:
+            manager.export_graphs(i)
             manager.curve_fit()
+            self.clickables[7+i].should_render = True
+            i += 1
         self.__in_calculation = False
+        for clickable in self.clickables[4:7]:
+            clickable.should_render = True
+        self.clickables[-1].should_render = False
 
 def draw_table(screen, input_text_table, table_x, table_y, cell_width, cell_height):
     for row in range(len(input_text_table)):

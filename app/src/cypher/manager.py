@@ -20,10 +20,10 @@ class Manager:
         self.fp = 0
         self.fr = 0
 
-    def export_graphs(self):
+    def export_graphs(self, i):
         fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
         fig.patch.set_facecolor((BACKGROUND_COLOR[0]/255, BACKGROUND_COLOR[1]/255, BACKGROUND_COLOR[2]/255))
-        ax1.set_title("Vr(t) public shared encrypted message (for last character)")
+        ax1.set_title("Vr(t) public shared encrypted message (for " + str(i+1) + "th last character)")
         ax1.set_ylabel("Volt (V)")
         ax1.set_xlabel("Time (ms)")
         ax1.xaxis.set_label_coords(-0.07, -0.05)
@@ -34,9 +34,12 @@ class Manager:
         ax2.xaxis.tick_top()
         handles, labels = ax2.get_legend_handles_labels()
         ax2.legend(handles[::-1], labels[::-1], loc="lower right")
-        fig.text(0.5, 0.05, "p(t) initial message and d(t) decrypted message (for last character)",
+        fig.text(0.5, 0.05, "p(t) initial message and d(t) decrypted message (for " + str(i+1) + "th character)",
                  ha='center', fontsize=12)
-        fig.savefig('app/ressources/graph.png')
+        fig.savefig('app/ressources/export/graph0' + str(i) + '.png')
+        self.encryption.print_simulation_result("encryption", 1, i)
+        self.decryption.print_simulation_result("decryption", 2, i)
+
 
 
     def curve_fit(self):

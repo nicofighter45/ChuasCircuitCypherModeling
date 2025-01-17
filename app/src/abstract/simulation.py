@@ -31,14 +31,17 @@ class Simulation(ABC):
         )
 
 
-    def print_simulation_result(self, name):
-        plt.title("Simulation " + name)
-        plt.plot(self.times, self.solution.y[0], label="v1")
-        plt.plot(self.times, 100 * self.solution.y[1], label="v2")
-        plt.plot(self.times, 1000 * self.solution.y[2], label="i3")
-        plt.axis([0, end, -5, 5])
-        plt.legend(["v1 (V)", "v2 (10mV)", "i3 (mA)"])
-        plt.show()
+    def print_simulation_result(self, name, i, j):
+        fig, axs = plt.subplots()
+        fig.patch.set_facecolor((BACKGROUND_COLOR[0] / 255, BACKGROUND_COLOR[1] / 255, BACKGROUND_COLOR[2] / 255))
+        axs.set_title("Electrical " + name + " for the " + str(j + 1) + "th character")
+        axs.set_xlabel('Time (ms)')
+        ts = [1000*t for t in self.times]
+        axs.plot(ts, self.solution.y[0], label="v1")
+        axs.plot(ts, 100 * self.solution.y[1], label="v2")
+        axs.plot(ts, 1000 * self.solution.y[2], label="i3")
+        axs.legend(["v1 (V)", "v2 (10mV)", "i3 (mA)"])
+        fig.savefig(f'app/ressources/export/graph{i}{j}.png')
 
 
 def f1(x, k):

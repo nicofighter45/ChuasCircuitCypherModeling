@@ -25,17 +25,26 @@ class Clickable(pg.Rect):
 
 class Button(Clickable):
 
-    def __init__(self, text, color, position, size, function=None):
+    def __init__(self, text, color, position, size, function=None, should_render=True, text_size=22, black_box=False):
         self.__action = function
         self.__text = text
+        self.should_render = should_render
+        self.__text_size = text_size
+        self.__black_box = black_box
         super().__init__(color, position, size)
 
     def draw(self, screen):
+        if not self.should_render:
+            return
         super().draw(screen)
-        text = get_font().render(self.__text, True, pg.Color("black"))
+        text = get_font(self.__text_size).render(self.__text, True, pg.Color("black"))
         screen.blit(text, (self.x + self.width // 2 - text.get_width() // 2, self.y + self.height // 2 - text.get_height() // 2))
+        if self.__black_box:
+            pygame.draw.rect(screen, pg.Color("black"), self, 2)
 
     def check_clicked(self, event):
+        if not self.should_render:
+            return False
         if self._is_clicked(event):
             if self.__action is not None:
                 self.__action()
