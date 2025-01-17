@@ -4,6 +4,12 @@
 
 Pour lancer le programme, il suffit d'exécuter le fichier *`main.py`*
 
+## Problème d'affichage
+
+Si jamais vous n'avez pas le même affichage que l'image *`window.png`*, essayer de changer votre zoom dans vos paramètre d'affichage de l'os.
+
+Vous pouvez aussi lancer le fichier *`rescue.py`* mais vous ne profiterez pas du pleine écran
+
 ## Erreur
 
 Si jamais la fenêtre n'apparait pas, tentez de lancer le programme depuis un terminal de commande pour voir apparaître une erreur.

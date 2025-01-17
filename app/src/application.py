@@ -17,15 +17,19 @@ class App:
 
 
     # init, create buttons and initialize variables
-    def __init__(self, title):
+    def __init__(self, title, fullscreen=False):
 
 
         self.__title = title
+        self.__fullscreen = fullscreen
 
         # init pygame
         matplotlib.use("Agg")
         pg.init()
-        self.__screen = pg.display.set_mode(WINDOW_SIZE, pygame.FULLSCREEN)
+        if fullscreen:
+            self.__screen = pg.display.set_mode(WINDOW_SIZE, pg.FULLSCREEN)
+        else:
+            self.__screen = pg.display.set_mode(WINDOW_SIZE)
         pg.display.set_caption(self.__title)
         icon = pg.image.load('app/ressources/icon.jpg')
         pg.display.set_icon(icon)
@@ -241,7 +245,7 @@ class App:
         pg.display.quit()
         matplotlib.use("TkAgg")
         launch_chua_circuit()
-        self.__init__(self.__title)
+        self.__init__(self.__title, self.__fullscreen)
 
     def __message(self, text, x=80, y=150, size=22):
         """Display a message on the screen"""

@@ -27,7 +27,7 @@ def install_packages():
 def launch_app():
     """Launch the application"""
     from app.src.application import App
-    app = App("Chaotic Cryptography Simulation")
+    app = App("Chaotic Cryptography Simulation", True)
 
 if __name__ == "__main__":
     print("\n\n\nRunning Chaotic Cryptography Simulation\n\n-----------------------------\n\nCreated by Hugo, Nicolas, Teodor\n\n")
